@@ -36,12 +36,12 @@ public class StudentController {
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadfile(@RequestParam("file") MultipartFile file) throws IOException {
-        System.out.println(file.getOriginalFilename());
-        System.out.println(file.getSize());
-        System.out.println(file.getContentType());
-        System.out.println(file.isEmpty());
-        System.out.println(file.getResource());
-        System.out.println(file.getName());
+//        System.out.println(file.getOriginalFilename());
+//        System.out.println(file.getSize());
+//        System.out.println(file.getContentType());
+//        System.out.println(file.isEmpty());
+//        System.out.println(file.getResource());
+//        System.out.println(file.getName());
         String uploadDir = System.getProperty("user.dir")+ "\\uploads\\";
         File directory = new File(uploadDir);
         if (!directory.exists()){
@@ -50,5 +50,23 @@ public class StudentController {
         String path = uploadDir + file.getOriginalFilename();
         file.transferTo(new File(path));
         return ResponseEntity.ok(file.getOriginalFilename());
+    }
+
+    @PostMapping(value = "/uploadMultiple", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadsfile(@RequestPart("files") List<MultipartFile> files) throws IOException {
+        String uploadDir = System.getProperty("user.dir")+ "\\uploads\\";
+        File directory = new File(uploadDir);
+        if (!directory.exists()){
+            directory.mkdirs();
+        }
+        files.forEach(file -> {
+            String path = uploadDir + file.getOriginalFilename();
+            try {
+                file.transferTo(new File(path));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return ResponseEntity.ok("Successfully");
     }
 }
