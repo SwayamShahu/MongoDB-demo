@@ -5,6 +5,7 @@ import com.app.analytics.dto.StudentResponseDto;
 import com.app.analytics.model.Student;
 import com.app.analytics.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -34,6 +36,19 @@ public class StudentController {
     @GetMapping
     public ResponseEntity<List<StudentResponseDto>> getAllStudent(){
         return ResponseEntity.ok(studentService.getStudents());
+    }
+
+    // Export to students in CSV
+    @GetMapping("/export/csv")
+    public void exportCsv(HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename = student.csv");
+        PrintWriter writer = response.getWriter();
+        writer.println("Name, City, Age, Url");
+        for (StudentResponseDto stu: studentService.getStudents()){
+            writer.println(stu.getName() + "," + stu.getCity() + "," +stu.getAge() + "," + stu.getUrl());
+        }
+        writer.flush();
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
