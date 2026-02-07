@@ -12,6 +12,7 @@ public class Student {
     private String name;
     private int age;
     private String city;
+    private String profileImage;
 
     @Override
     public String toString() {

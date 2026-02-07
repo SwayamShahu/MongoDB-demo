@@ -1,8 +1,10 @@
 package com.app.analytics.controller;
 
 import com.app.analytics.dto.GetStudentDto;
+import com.app.analytics.dto.StudentResponseDto;
 import com.app.analytics.model.Student;
 import com.app.analytics.service.StudentService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,7 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetStudentDto>> getAllStudent(){
+    public ResponseEntity<List<StudentResponseDto>> getAllStudent(){
         return ResponseEntity.ok(studentService.getStudents());
     }
 
@@ -52,6 +54,7 @@ public class StudentController {
         return ResponseEntity.ok(file.getOriginalFilename());
     }
 
+    @Operation(summary = "uploads multiple files", description = "You can upload multiple format file like pdf, word, text and many more")
     @PostMapping(value = "/uploadMultiple", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadsfile(@RequestPart("files") List<MultipartFile> files) throws IOException {
         String uploadDir = System.getProperty("user.dir")+ "\\uploads\\";
@@ -67,6 +70,37 @@ public class StudentController {
                 throw new RuntimeException(e);
             }
         });
+        return ResponseEntity.ok("Successfully");
+    }
+
+    // Take two file in different key -> files, student image
+
+    @PostMapping(value = "/upload/TwoFile", consumes = "multipart/form-data")
+    public ResponseEntity<String> addTwoFile(@RequestParam("file") MultipartFile file, @RequestParam("studentImage") MultipartFile studentImage) throws IOException {
+        String uploadDir = System.getProperty("user.dir")+ "\\uploads\\";
+        File directory = new File(uploadDir);
+        if (!directory.exists()){
+            directory.mkdirs();
+        }
+        String path1 = uploadDir + file.getOriginalFilename();
+        file.transferTo(new File(path1));
+        String path2 = uploadDir + studentImage.getOriginalFilename();
+        studentImage.transferTo(new File(path2));
+
+        return ResponseEntity.ok("Successfully");
+    }
+
+    // Write a api to get profile image of student and save key database.
+    @PostMapping(value = "/updateProfileImage", consumes = "multipart/form-data")
+    public ResponseEntity<String> updateProfileImage(@RequestParam("file") MultipartFile file, @RequestParam String studentName) throws IOException {
+        String uploadDir = System.getProperty("user.dir")+ "\\uploads\\";
+        File directory = new File(uploadDir);
+        if (!directory.exists()){
+            directory.mkdirs();
+        }
+        String key = studentService.saveProfilePhoto(studentName, file.getOriginalFilename());
+        String path = uploadDir + key + file.getOriginalFilename();
+        file.transferTo(new File(path));
         return ResponseEntity.ok("Successfully");
     }
 }
