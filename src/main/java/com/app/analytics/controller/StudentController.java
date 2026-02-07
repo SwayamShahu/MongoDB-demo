@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -32,9 +34,21 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getStudents());
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadfile(@RequestParam("file") MultipartFile file){
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadfile(@RequestParam("file") MultipartFile file) throws IOException {
         System.out.println(file.getOriginalFilename());
+        System.out.println(file.getSize());
+        System.out.println(file.getContentType());
+        System.out.println(file.isEmpty());
+        System.out.println(file.getResource());
+        System.out.println(file.getName());
+        String uploadDir = System.getProperty("user.dir")+ "\\uploads\\";
+        File directory = new File(uploadDir);
+        if (!directory.exists()){
+            directory.mkdirs();
+        }
+        String path = uploadDir + file.getOriginalFilename();
+        file.transferTo(new File(path));
         return ResponseEntity.ok(file.getOriginalFilename());
     }
 }
