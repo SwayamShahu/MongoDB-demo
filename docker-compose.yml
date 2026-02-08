@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    container_name: analytics-app
+    ports:
+      - "7000:8080"
+    depends_on:
+      - mongo
+    command: >
+      java
+      -Dspring.data.mongodb.host=mongo
+      -Dspring.data.mongodb.port=27017
+      -Dspring.data.mongodb.database=analyticsdb
+      -jar app.jar
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+volumes:
+  mongodata:
