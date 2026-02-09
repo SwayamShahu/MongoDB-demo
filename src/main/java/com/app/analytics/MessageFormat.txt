@@ -6,3 +6,10 @@ This OTP is valid for 5 minutes.
 Please do not share it with anyone.
 Thanks,
 Analytics Team
+
+Steps -
+1. Google Account → Security
+2. Enable 2-Step Verification
+3. App Passwords → Generate
+4. Choose: Mail → Other
+5. Copy password

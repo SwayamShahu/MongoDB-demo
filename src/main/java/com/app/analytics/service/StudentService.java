@@ -26,8 +26,11 @@ public class StudentService {
     @Autowired
     private final MongoTemplate mongoTemplate;
     private final StudentRepo studentRepo;
-    public void addStudent(Student student){
+    private final MailService mailService;
+//    String to, String name, String otp
+    public void addStudent(Student student) throws Exception {
         studentRepo.save(student);
+        mailService.sendOtpMail(student.getMail(), student.getName(), "4365");
         System.out.println(student.toString());
     }
     public List<StudentResponseDto> getStudents(){
