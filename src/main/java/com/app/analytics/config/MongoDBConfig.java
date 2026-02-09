@@ -12,6 +12,6 @@ import org.springframework.context.annotation.Configuration;
 public class MongoDBConfig {
     @Bean
     public MongoClient mongoClient() {
-        return MongoClients.create("mongodb://mongo:27017/test");
+        return MongoClients.create("mongodb+srv://swayamscse22_db_user:dfXdKFKKHQstcIW9@cluster0.gisau4i.mongodb.net/?appName=Cluster0");
     }
 }

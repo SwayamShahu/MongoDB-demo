@@ -3,11 +3,13 @@ package com.app.analytics.controller;
 import com.app.analytics.dto.GetStudentDto;
 import com.app.analytics.dto.StudentResponseDto;
 import com.app.analytics.model.Student;
+import com.app.analytics.service.S3Service;
 import com.app.analytics.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
+    private final S3Service service;
 
     @PostMapping
     public ResponseEntity<String> createStudent(@RequestBody Student student){
@@ -53,20 +56,18 @@ public class StudentController {
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadfile(@RequestParam("file") MultipartFile file) throws IOException {
-//        System.out.println(file.getOriginalFilename());
-//        System.out.println(file.getSize());
-//        System.out.println(file.getContentType());
-//        System.out.println(file.isEmpty());
-//        System.out.println(file.getResource());
-//        System.out.println(file.getName());
-        String uploadDir = System.getProperty("user.dir")+ "\\uploads\\";
-        File directory = new File(uploadDir);
-        if (!directory.exists()){
-            directory.mkdirs();
-        }
-        String path = uploadDir + file.getOriginalFilename();
-        file.transferTo(new File(path));
-        return ResponseEntity.ok(file.getOriginalFilename());
+        // Using S3 bucket
+        System.out.println(file.getOriginalFilename());
+        service.upload(file.getOriginalFilename(), file.getBytes());
+        return ResponseEntity.ok("Successfully upload");
+    }
+
+    @GetMapping(value = "/download/{name}")
+    public ResponseEntity<byte[]> downloadfile(@PathVariable String name) throws IOException {
+        // Using S3 bucket
+        byte[] response = service.download(name);
+
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(response);
     }
 
     @Operation(summary = "uploads multiple files", description = "You can upload multiple format file like pdf, word, text and many more")
