@@ -1,6 +1,5 @@
 package com.app.analytics.controller;
 
-import com.app.analytics.dto.GetStudentDto;
 import com.app.analytics.dto.StudentResponseDto;
 import com.app.analytics.model.Student;
 import com.app.analytics.service.S3Service;
@@ -17,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -66,8 +67,8 @@ public class StudentController {
     public ResponseEntity<byte[]> downloadfile(@PathVariable String name) throws IOException {
         // Using S3 bucket
         byte[] response = service.download(name);
-
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(response);
+        String type = Files.probeContentType(Paths.get(name));
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(type)).body(response);
     }
 
     @Operation(summary = "uploads multiple files", description = "You can upload multiple format file like pdf, word, text and many more")
