@@ -45,6 +45,7 @@ public class StudentService {
             s.setName(stu.getName());
             s.setAge(stu.getAge());
             s.setCity(stu.getCity());
+
             if (stu.getProfileImage() != null){
                 s.setUrl(System.getProperty("user.dir")+ "\\uploads\\" + stu.getProfileImage());
             }

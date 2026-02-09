@@ -2,6 +2,7 @@ package com.app.analytics.controller;
 
 import com.app.analytics.dto.StudentResponseDto;
 import com.app.analytics.model.Student;
+import com.app.analytics.service.MailService;
 import com.app.analytics.service.S3Service;
 import com.app.analytics.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +27,7 @@ import java.util.List;
 public class StudentController {
     private final StudentService studentService;
     private final S3Service service;
+    private final MailService mailService;
 
     @PostMapping
     public ResponseEntity<String> createStudent(@RequestBody Student student){
@@ -120,4 +122,11 @@ public class StudentController {
         file.transferTo(new File(path));
         return ResponseEntity.ok("Successfully");
     }
+
+    @GetMapping("/welcome-mail")
+    public void sendMail(@RequestParam String mail){
+        mailService.sentmail(mail);
+    }
+
+    // OTP SYSTEM -
 }

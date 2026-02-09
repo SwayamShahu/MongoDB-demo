@@ -13,6 +13,7 @@ public class Student {
     private int age;
     private String city;
     private String profileImage;
+    private String mail;
 
     @Override
     public String toString() {
