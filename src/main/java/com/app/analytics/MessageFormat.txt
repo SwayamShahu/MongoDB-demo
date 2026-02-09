@@ -13,3 +13,11 @@ Steps -
 3. App Passwords → Generate
 4. Choose: Mail → Other
 5. Copy password
+
+
+Task -
+1. Register a user
+2. Sent OTP -> (expire date, mail, otp, isUsed)
+3. Verify OTP -> (API (mail, otp) return true or false)
+
+

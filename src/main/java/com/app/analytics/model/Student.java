@@ -14,6 +14,7 @@ public class Student {
     private String city;
     private String profileImage;
     private String mail;
+    private boolean isVerified;
 
     @Override
     public String toString() {

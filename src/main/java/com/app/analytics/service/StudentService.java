@@ -1,24 +1,19 @@
 package com.app.analytics.service;
 
-import com.app.analytics.dto.GetStudentDto;
 import com.app.analytics.dto.StudentResponseDto;
+import com.app.analytics.model.Otp;
 import com.app.analytics.model.Student;
+import com.app.analytics.repository.OtpRepo;
 import com.app.analytics.repository.StudentRepo;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
-
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Data
@@ -27,12 +22,34 @@ public class StudentService {
     private final MongoTemplate mongoTemplate;
     private final StudentRepo studentRepo;
     private final MailService mailService;
-//    String to, String name, String otp
+    private final OtpRepo otpRepo;
+    // Old without otp concept
+//    public void addStudent(Student student) throws Exception {
+//        studentRepo.save(student);
+//        mailService.sendOtpMail(student.getMail(), student.getName(), "4365");
+//        System.out.println(student.toString());
+//    }
+
     public void addStudent(Student student) throws Exception {
+//        if (studentRepo.findByMail(student.getMail()).isEmpty()){
+//
+//        }
+
+        int min = 1000;
+        int max = 9999;
+
+        Otp otp = new Otp();
+        otp.setUsed(false);
+        otp.setMail(student.getMail());
+        otp.setExpireTime(System.currentTimeMillis() + + (5 * 60 * 1000));
+        String s = String.valueOf(min + (int)(Math.random() * ((max - min) + 1)));
+        otp.setOtp(s);
+        mailService.sendOtpMail(student.getMail(), student.getName(), otp.getOtp());
+        otpRepo.save(otp);
         studentRepo.save(student);
-        mailService.sendOtpMail(student.getMail(), student.getName(), "4365");
         System.out.println(student.toString());
     }
+
     public List<StudentResponseDto> getStudents(){
 //        Aggregation aggregation = Aggregation.newAggregation(
 //                group("city").count().as("total_student"), sort(Sort.Direction.DESC, "total_student"), project("total_student").and("_id").as("city")
